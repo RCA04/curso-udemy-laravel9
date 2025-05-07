@@ -30,14 +30,39 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        $user = $request->all();
-        $user[ 'password']= bcrypt($request->password);
-        $user = User::create($user);
+        $credenciais = $request->validate([
+            'name'=>['required','string'],
+            'email' =>['required', 'email', 'unique:users,email'],
+            'password'=>['required'],
+        ],
+        [
+            'name.required'=> 'O campo Nome é obrigatorio!',
+            'email.required'=>'O campo de Email é obrigatorio!',
+            'email.email'=>'O email não é válido!',
+            'email.unique'=>'Email já cadastrado insira outro!',
+            'password.required'=>'O campo senha é obrigatorio!',
+        ]   
+        );
 
-        Auth::login($user);
-    
-        return redirect()->route('admin.dashboard');
-    }
+            $user = $request->all();
+
+            if($request->file('photo')){
+                $file = $request->file('photo');
+                $fileName = date('dmYH').'_'.$file->getClientOriginalName(). '.' .$file->getClientOriginalExtension();
+                $file->move(public_path('img/profiles'), $fileName);
+                $user['photo'] = $fileName;
+            }
+
+
+
+
+            $user[ 'password']= bcrypt($request->password);
+            $user = User::create($user);
+
+            Auth::login($user);
+        
+            return redirect()->route('admin.dashboard');
+        }
 
     /**
      * Display the specified resource.

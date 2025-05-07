@@ -3,6 +3,7 @@
 use App\Http\Controllers\CarrinhoController;
 use App\Http\Controllers\dashboardController;
 use App\Http\Controllers\loginController;
+use App\Http\Controllers\profileController;
 use App\Http\Controllers\TesteController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -112,26 +113,32 @@ Route::group([
 });*/
 
 //controlador camada responsavel pela logica e regras de negocios
-//Route::resource('produtos', ProdutoController::class);  
-//Route::resource('users', UserController::class);  
-Route::get('/', [SiteController::class, 'index'])->name('site.index');
-Route::get('/produto/{slug}', [SiteController::class, 'details'])->name('site.details');
-Route::get('/categoria/{id}', [SiteController::class, 'categoria'])->name('site.categoria');
+Route::resource('produtos', ProdutoController::class);  
+Route::resource('users', UserController::class);  
 
-Route::get('/carrinho',[CarrinhoController::class,'carrinhoLista'])->name('site.carrinho');
+Route::get('/inicio', [SiteController::class, 'index'])->name('site.index')->middleware('auth');
+Route::get('/produto/{slug}', [SiteController::class, 'details'])->name('site.details')->middleware('auth');
+Route::get('/categoria/{id}', [SiteController::class, 'categoria'])->name('site.categoria')->middleware('auth');
+
+Route::get('/carrinho',[CarrinhoController::class,'carrinhoLista'])->name('site.carrinho')->middleware('auth');
 Route::post('/carrinho',[CarrinhoController::class,'adicionarCarrinho'])->name('site.addcarrinho');
 Route::post('/remove',[CarrinhoController::class,'removeCarrinho'])->name('site.removecarrinho');
 Route::post('/atualizar',[CarrinhoController::class,'atualizaCarrinho'])->name('site.atualizacarrinho');
 Route::get('/limpar',[CarrinhoController::class, 'limpaCarrinho'])->name('site.limparcarrinho');
 
-Route::view('/login', 'login.form')->name('login.form');
+Route::view('/', 'login.form')->name('login.form');
 Route::post('/auth', [loginController::class, 'auth'])->name('login.auth');
 Route::get('/logout', [loginController::class, 'logout'])->name('login.logout');
 Route::get('/register', [loginController::class, 'create'])->name('login.create');
 
+Route::get('/perfil',[profileController::class, 'index'])->name('profile.view')->middleware('auth');
+Route::get('/perfil/editor',[profileController::class, 'edit'])->name('profile.edit')->middleware('auth');
+Route::put('/perfil/update',[profileController::class, 'update'])->name('profile.update')->middleware('auth');
+
 
 
 Route::get('/admin/dashboard', [dashboardController::class, 'index'])->name('admin.dashboard')->middleware('auth');
-Route::get('/admin/produtos', [ProdutoController::class, 'index'])->name('admin.produtos');
-Route::delete('/admin/produto/delete/{id}', [ProdutoController::class, 'destroy'])->name('admin.produto.delete');
-Route::post('/admin/produto/store', [ProdutoController::class,'store'])->name('admin.produto.store');
+Route::get('/admin/produtos', [ProdutoController::class, 'index'])->name('admin.produtos')->middleware('auth');
+Route::delete('/admin/produto/delete/{id}', [ProdutoController::class, 'destroy'])->name('admin.produto.delete')->middleware('auth');
+Route::delete('/admin/produto/update/{id}', [ProdutoController::class, 'update'])->name('admin.produto.update')->middleware('auth');
+Route::post('/admin/produto/store', [ProdutoController::class,'store'])->name('admin.produto.store')->middleware('auth');

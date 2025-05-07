@@ -14,7 +14,7 @@ class SiteController extends Controller
     use AuthorizesRequests;
 
     public function index(){
-        
+
         $produtos = Produtos::paginate(3);
         return view('site.home', compact('produtos'));
     }
@@ -31,7 +31,6 @@ class SiteController extends Controller
         if(Gate::denies('ver-produto', $produto)){
             return redirect()->route('site.index');
         }
-
         //Gate::authorize('ver-produto', $produto);
         //$this->authorize('verProduto', $produto);
         return view('site.details', compact('produto'));

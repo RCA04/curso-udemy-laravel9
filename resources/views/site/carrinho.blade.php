@@ -1,4 +1,4 @@
-@extends('site.layout')
+@extends('admin.layout')
 @section('title', "Carrinho")
 @section('conteudo')
 
@@ -53,7 +53,7 @@
               @csrf
               <td>
                 <input type="hidden" name="id" value={{ $item->id }}>
-                <input style="width: 40px; font-wheight:900;" class="white center" min="1" type="number" name="quantity" value="{{$item->quantity}}"></td>
+                <input style="width: 40px; font-weight:900;" class="white center" min="1" type="number" name="quantity" value="{{$item->quantity}}"></td>
             <td>
                 <button class="btn-floating  waves-effect waves-light orange"><i class="material-icons">refresh</i></button>
             
